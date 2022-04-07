@@ -1,4 +1,7 @@
+// ? se importan response y request de express para que salgan las props de estas
 const { response, request } = require('express');
+
+const Usuario = require('../models/Usuario');
 
 const usuariosGet = (req = request, res = response) => {
     const {q, nombre = 'No Name', apikey} = req.query;
@@ -18,14 +21,19 @@ const usuariosPut = (req, res) => {
     });
 }
 
-const usuariosPost = (req, res) => {
+const usuariosPost = async (req, res) => {
 
+    
+    const body = req.body
+    const usuario = new Usuario(body);
     const { nombre, edad } = req.body;
+    await usuario.save();
 
     res.status(201).json({
         msg: 'post API - controlador usuarios',
-        nombre,
-        edad,
+        // nombre,
+        // edad,
+        usuario
     });
 }
 
