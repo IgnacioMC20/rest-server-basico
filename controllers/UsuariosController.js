@@ -5,21 +5,44 @@ const bcryptjs = require('bcryptjs');
 
 const Usuario = require('../models/Usuario');
 
-const usuariosGet = (req = request, res = response) => {
-    const {q, nombre = 'No Name', apikey} = req.query;
-    res.json({
-        msg: 'get API - controlador usuarios',
-        q,
-        nombre,
-        apikey,
-    });
+const usuariosGet = async (req = request, res = response) => {
+    // const {q, nombre = 'No Name', apikey} = req.query;
+    const { limite, desde } = req.query;
+
+    // const usuarios = await Usuario.find({estado: true}) // Mandamos la condicion en el find({condicion: true})
+    // .skip(Number(desde))
+    // .limit(parseInt(limite));
+
+    // const totalUsuarios = await Usuario.countDocuments({estado: true});
+    // res.json({totalUsuarios, usuarios});
+
+    const [ usuarios, total ] = await Promise.all([
+        Usuario.find({ estado: true }).skip(Number(desde)).limit(parseInt(limite)),
+        Usuario.countDocuments({ estado: true })
+    ])
+    res.json({ 
+        total,
+        usuarios,
+     });
 }
 
-const usuariosPut = (req, res) => {
-    const id = req.params.id;
+const usuariosPut = async (req, res) => {
+    const { id } = req.params; // ? get url params
+    const { _id, password, google, correo, ...rest } = req.body; // ? get body params
+
+    // Todo validar contra base de datos
+
+
+    if(password){
+        const salt = bcryptjs.genSaltSync();
+        rest.password = bcryptjs.hashSync(password, salt);
+    }
+
+    const usuario = await Usuario.findByIdAndUpdate(id, rest);
+
     res.json({
         msg: 'put API - controlador usuarios',
-        id
+        usuario
     });
 }
 
@@ -27,34 +50,30 @@ const usuariosPost = async (req, res) => {
     
     const { nombre, correo, password, rol } = req.body;
     const usuario = new Usuario({ nombre, correo, password, rol });
-    
-    // ? Validar si el correo existe
-    const existeCorreo = await Usuario.findOne({ correo });
-    if (existeCorreo) {
-        return res.status(400).json({
-            // ok: false,
-            msg: 'El correo ya existe'
-        });
-    }
 
     // ? Encriptar contraseña
     const salt = bcryptjs.genSaltSync();
     usuario.password = bcryptjs.hashSync(password, salt);
 
+    console.log('user', usuario);
     // ? Guardar en BD
     await usuario.save();
 
-    res.status(201).json({
-        msg: 'post API - controlador usuarios',
-        // nombre,
-        // edad,
-        usuario
-    });
+    res.status(201).json(usuario);
 }
 
-const usuariosDelete = (req, res) => {
+const usuariosDelete = async (req, res) => {
+
+    const { id } = req.params;
+    
+    // ? fisicamente lo borramos
+    // const usuario = await Usuario.findByIdAndDelete(id);
+
+    const usuario = await Usuario.findByIdAndUpdate(id, { estado: false });
+
     res.json({
-        msg: 'delete API - controlador usuarios'
+        msg: 'delete API - controlador usuarios',
+        usuario
     });
 }
 
@@ -71,3 +90,15 @@ module.exports = {
     usuariosPatch,
     usuariosDelete,
 }
+
+/*
+estructura del body
+{
+    "nombre": "test 1",
+    "google": true,
+    "nuevoCampo": true,
+    "correo": "test1@test.com",
+    "password": "123456",
+    "rol": "ADMIN_ROLE"
+}
+*/

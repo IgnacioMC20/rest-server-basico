@@ -7,7 +7,7 @@ const dbConnection = async () => {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             // useCreateIndex: true, Ya no es soportada
-            // useFindAndModify: false, Ya no es soportada
+            // useFindAndModify: false, 
         });
 
         console.log('Base de datos ONLINE'.rainbow);
