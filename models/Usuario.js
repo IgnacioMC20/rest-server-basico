@@ -34,7 +34,10 @@ const UsuarioSchema = Schema({
 });
 
 UsuarioSchema.methods.toJSON = function() {
-    let { __v, password, ...usuario } = this.toObject();
+    // extraer props y regresar solo las que nos interesan
+    let { __v, password, _id, ...usuario } = this.toObject();
+    // cambiar/agregar nuevas propiedades del objeto
+    usuario.uid = _id;
     return usuario;
 }
 
