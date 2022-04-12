@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
+
 const { usuariosGet, usuariosPut, usuariosPost, usuariosDelete, usuariosPatch } = require('../controllers/UsuariosController');
 const { esRolValido, emailExiste, existeUsuarioPorId } = require('../helpers/db-validators');
 
