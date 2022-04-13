@@ -38,10 +38,10 @@ const usuariosPut = async (req, res) => {
         rest.password = bcryptjs.hashSync(password, salt);
     }
 
-    const usuario = await Usuario.findByIdAndUpdate(id, rest);
+    const usuario = await Usuario.findByIdAndUpdate(id, rest, { new: true });
 
     res.json({
-        msg: 'put API - controlador usuarios',
+        msg: `Usuario Actualizado: ${usuario.nombre}`,
         usuario
     });
 }

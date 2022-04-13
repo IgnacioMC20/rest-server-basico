@@ -30,9 +30,6 @@
 
     <script>
         function handleCredentialResponse(response) {
-           //Google token
-           //console.log('id_token', response.credential);
-
            const body = { id_token: response.credential };
            fetch('https://rest-server-ign.herokuapp.com/api/auth/google',{
                 method: 'POST',
@@ -49,6 +46,7 @@
         }
 
         const signOut = document.getElementById('google_signout');
+        
         signOut.onclick = () => {
             console.log(google.accounts.id);
             google.accounts.id.disableAutoSelect();
@@ -58,13 +56,6 @@
                 location.reload();
             } );
         }
-
-        /*document.getElementById('google_signout').addEventListener('click', () => {
-            const auth2 = gapi.auth2.getAuthInstance();
-            auth2.signOut().then(function () {
-                console.log('User signed out.');
-            });
-        });*/
       </script>
 </body>
 </html>
